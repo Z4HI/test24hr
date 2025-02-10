@@ -1,0 +1,68 @@
+# Node modules (dependencies)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore JSON files containing secrets
+*.json
+!package.json  # Keep package.json (for Node.js projects)
+googlettsapi.json
+# Logs
+logs/
+*.log
+*.out
+*.pid
+*.seed
+*.gz
+debug.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build and cache folders
+dist/
+build/
+.cache/
+.tmp/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Process ID and lock files
+pids/
+*.pid
+*.seed
+*.lock
+
+# Coverage and test reports
+coverage/
+nyc_output/
+*.lcov
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+*.pdb
+*.mdb
+dump.rdb
+
+# Docker files
+docker-compose.override.yml
+
+# Firebase, AWS, and cloud-related
+.firebase/
+.aws/
+
+# Misc
+.npm/
