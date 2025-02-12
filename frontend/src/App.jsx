@@ -18,9 +18,9 @@ function App() {
   const fetchTriggeredRef = useRef(false)
   const [text, setText] = useState('');
   const [audioUrl, setAudioUrl] = useState(null);
-  const [timeleft,setTimeLeft] = useState(10)
-  const [polls,setPoll] = useState([[0],[0],[0]])
-
+  const [timeleft,setTimeLeft] = useState(10000)
+  const [polls,setPoll] = useState([[0],[0],[0],[0]])
+  const [stillNarrating,setStillNarrating] = useState(false)
 
   const handleTextChange = (e) => {
     setText(e.target.value);
@@ -61,7 +61,7 @@ function App() {
         console.log('Audio finished. Sending request to delete file...');
         deleteAudioUrl(audioUrl)
         setLoading(false);
-        setTimeLeft(10)
+        setTimeLeft(30)
       };
       newAudio.play()
       .then(() => console.log("Audio is playing..."))
@@ -79,7 +79,7 @@ function App() {
       fetchStory(storyParts.join(" "),userChoice);
       GenerateOptions(storyParts.join(" "));
     }
-    if (storyParts.length > 5) {
+    if (storyParts.length > 10) {
       storyParts.shift(); // Remove the first part if length exceeds 5
     }
     generateTTS()
@@ -144,7 +144,7 @@ function App() {
   }
   const handleClick = () => {
     let detectedValue = null;
-    if(input > 3){
+    if(input > 4){
       alert("Invalid choice")
       return;
     }else if (input.includes("1")) {
@@ -153,6 +153,8 @@ function App() {
       detectedValue = 2;
     } else if (input.includes("3")) {
       detectedValue = 3;
+    } else if (input.includes("4")) {
+      detectedValue = 4;
     }
       console.log("Detected Value:", detectedValue); // Log before updating state
 
@@ -161,8 +163,6 @@ function App() {
           i === detectedValue-1 ? [poll[0] + 1] : poll
         )
       );
-
-  fetchTriggeredRef.current = true;
   };
 
 const handlePollEnd = ()=>{
@@ -178,12 +178,12 @@ const handlePollEnd = ()=>{
     console.log(options[max])
     setUserChoice(options[max]);
     setStoryParts((prevStoryParts) => [
-      ...prevStoryParts
+      ...prevStoryParts,
     ])
     setInput(""); // Clear input after processing
     setStory("")
     setOptions([])
-    setPoll([[0],[0],[0]])
+    setPoll([[0],[0],[0],[0]])
     fetchTriggeredRef.current = true
 }
 
@@ -204,35 +204,36 @@ useEffect(()=>{
   return (
     <>
     <div className='bg-dark vh'>
-    <div>
-      <h1 className='light text-center display-3'>Test Interactive Story</h1>
-      <h3 className='display-6 light'>Story:</h3>
-    <div className=' blockquote d-flex'>
-      <div className='w-50'>
+      <h1 className='light text-center'>Test Interactive Story</h1>
+    
+    {loading ? (
+        <div>
+            <div className=' d-flex justify-content-center'>
+      <div className='w-50 bg-danger'>
+        <h5>Story</h5>
       <Typewriter
         options={{
         strings: [story],
         autoStart: true,
         loop: true,
-        delay: 55,
+        delay: 65,
         pauseFor:900000,
         wrapperClassName:'light text-center'
         }}
-    />
+      />
       </div>
     
-  <div className='light w-50 text-center'>Image</div>
+      <div className='light w-25 text-center bg-primary '>Image</div>
     </div>
-
-      <h2 className='light text-center display-4'>Time Left : {timeleft}</h2>
-        
-
-    {loading ? (
-        <p className=' text-center light'>Loading...</p>
+        </div>
       ) : options.length > 0 ? (
         
-          <div className='container light align-items-center d-flex w-80'>
-        <table className="table table-responsive">
+      <div className='container light align-items-center d-flex justify-content-between '>
+        <div className=''>
+          <h2 className='light text-center'>Time Left to Vote:</h2>
+          <h2 className='text-center'> {timeleft}</h2>
+        </div>
+        <table className="table">
         <thead >
           <tr className="table-danger" >
             <th scope="col">#</th>
@@ -244,41 +245,42 @@ useEffect(()=>{
           <tr>
             <th scope="row">1</th>
             <td>{options[0]}</td>
-            <td>{polls[0]}</td>
+            <td className='text-center '>{polls[0]}</td>
           </tr>
           <tr>
             <th scope="row">2</th>
             <td>{options[1]}</td>
-            <td>{polls[1]}</td>
+            <td className='text-center'>{polls[1]}</td>
           </tr>
           <tr>
             <th scope="row">3</th>
             <td >{options[2]}</td>
-            <td>{polls[2]}</td>
+            <td className='text-center'>{polls[2]}</td>
+          </tr>
+          <tr>
+            <th scope="row">4</th>
+            <td >{options[3]}</td>
+            <td className='text-center'>{polls[3]}</td>
           </tr>
         </tbody>
       </table>
-          </div>
-
-
+      </div>
       ) : (
         <p>No items available</p>
       )}
 
-    </div>
-    <div className=' bg-dark text-center'>
-    <input
-        type="text"
-        value={input}
-        onChange={handleChange}
-        placeholder="Enter something..."
-        className="border p-2 w-full rounded-md text-center"
-      />
-    <button type="button" className="btn btn-primary m-3" onClick={handleClick}>Primary</button>
-    </div>
 
     </div>
- 
+    <div className=' bg-dark text-center'>
+        <input
+            type="text"
+            value={input}
+            onChange={handleChange}
+            placeholder="Enter something..."
+            className="border p-2 w-full rounded-md text-center"
+        />
+        <button type="button" className="btn btn-primary m-3" onClick={handleClick}>Primary</button>
+        </div>
     
     </>
   )

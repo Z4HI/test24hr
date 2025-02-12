@@ -55,19 +55,21 @@ app.post("/GenerateOptions", async (req, res) => {
  
     const prompt = `Here is the latest chapter of the story:
     ${req.body.story}
-    What happens next? Provide 3 different options, each being one sentence long, describing possible directions the story could take. 
+    What happens next? Provide 4 different options, each being one sentence long, describing possible directions the story could take. 
+    the 4th option should always be the choice to "end the story"
     Always Format them like this:
       Always Format them like this:
     1. 
     2. 
-    3.`;
+    3.
+    4.End of the story`;
 
     const response = await OpenAIApi.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [{ role: "system", content: "You are a creative storyteller." },
             { role: "user", content: prompt }],
         temperature: 0.8, // Adjust creativity
-        max_tokens: 300,
+        max_tokens: 100,
     });
     const responseText = response.choices[0].message.content.trim()
     res.send(responseText);
@@ -75,17 +77,19 @@ app.post("/GenerateOptions", async (req, res) => {
 
 app.post("/GenerateNextChapter", async (req, res) => {
     const prompt = `Here is the latest chapter of the story:
-    ${req.body.currentStory}
-    the choice was ${req.body.choice}
-    repeat the choice to me
+    ${req.body.currentStory}.
+    The next part of the story is about :${req.body.userchoice}.
+    If the latest part of the story is "End of the story" then provide a 
+    happy ending to the story,and make sure the story ends with happily every after.
+    Or else Generate what happens next..Do not add a title or chapter.
+    
     `;
-
     const response = await OpenAIApi.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [{ role: "system", content: "You are a creative storyteller." },
             { role: "user", content: prompt }],
         temperature: 0.8, // Adjust creativity
-        max_tokens: 10,
+        max_tokens: 300,
     });
     const responseText = response.choices[0].message.content.trim()
     res.send(responseText);
