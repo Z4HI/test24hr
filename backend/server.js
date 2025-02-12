@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
+
 const app = express();
 dotenv.config();
 app.use(cors());
@@ -48,7 +49,6 @@ app.delete("/DeleteAudioUrl", async (req,res)=>{
     const url = req.body.filePath
     if (fs.existsSync(url)){
         fs.unlinkSync(url)
-        console.log('audio deleted');
     } 
 })
 app.post("/GenerateOptions", async (req, res) => {
