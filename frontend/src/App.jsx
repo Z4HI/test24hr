@@ -4,7 +4,8 @@ import { use } from 'react'
 import fs from 'fs'
 import path from "path";
 import Typewriter from 'typewriter-effect';
-import "bootstrap/dist/css/bootstrap.min.css";
+import Navbar from './components/navbar';
+
 
 function App() {
 
@@ -18,7 +19,7 @@ function App() {
   const fetchTriggeredRef = useRef(false)
   const [text, setText] = useState('');
   const [audioUrl, setAudioUrl] = useState(null);
-  const [timeleft,setTimeLeft] = useState(10000)
+  const [timeleft,setTimeLeft] = useState(10)
   const [polls,setPoll] = useState([[0],[0],[0],[0]])
   const [stillNarrating,setStillNarrating] = useState(false)
 
@@ -203,14 +204,15 @@ useEffect(()=>{
 
   return (
     <>
-    <div className='bg-dark vh'>
+    <div className='text-white'>
+      <Navbar/>
       <h1 className='light text-center'>Test Interactive Story</h1>
     
     {loading ? (
         <div>
             <div className=' d-flex justify-content-center'>
       <div className='w-50 bg-danger'>
-        <h5>Story</h5>
+        <h5 className=' text-[#00df9a]'>Story</h5>
       <Typewriter
         options={{
         strings: [story],
@@ -218,49 +220,49 @@ useEffect(()=>{
         loop: true,
         delay: 65,
         pauseFor:900000,
-        wrapperClassName:'light text-center'
+        wrapperClassName:' text-[#00df9a]'
         }}
       />
       </div>
     
-      <div className='light w-25 text-center bg-primary '>Image</div>
+      <div className=' text-[#00df9a]'>Image</div>
     </div>
         </div>
       ) : options.length > 0 ? (
         
-      <div className='container light align-items-center d-flex justify-content-between '>
+      <div className=''>
         <div className=''>
-          <h2 className='light text-center'>Time Left to Vote:</h2>
-          <h2 className='text-center'> {timeleft}</h2>
+          <h2 className='text-[#00df9a]'>Time Left to Vote:</h2>
+          <h2 className=''> {timeleft}</h2>
         </div>
-        <table className="table">
+        <table className="">
         <thead >
-          <tr className="table-danger" >
-            <th scope="col">#</th>
-            <th scope="col text-center">Choices</th>
-            <th scope="col">Votes</th>
+          <tr className="" >
+            <th scope="">#</th>
+            <th scope="">Choices</th>
+            <th scope="">Votes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th scope="row">1</th>
+            <th scope="">1</th>
             <td>{options[0]}</td>
-            <td className='text-center '>{polls[0]}</td>
+            <td className=' '>{polls[0]}</td>
           </tr>
           <tr>
-            <th scope="row">2</th>
+            <th scope="">2</th>
             <td>{options[1]}</td>
-            <td className='text-center'>{polls[1]}</td>
+            <td className=''>{polls[1]}</td>
           </tr>
           <tr>
-            <th scope="row">3</th>
+            <th scope="">3</th>
             <td >{options[2]}</td>
-            <td className='text-center'>{polls[2]}</td>
+            <td className=''>{polls[2]}</td>
           </tr>
           <tr>
-            <th scope="row">4</th>
+            <th scope="">4</th>
             <td >{options[3]}</td>
-            <td className='text-center'>{polls[3]}</td>
+            <td className=''>{polls[3]}</td>
           </tr>
         </tbody>
       </table>
@@ -271,15 +273,15 @@ useEffect(()=>{
 
 
     </div>
-    <div className=' bg-dark text-center'>
+    <div className='text-[#00df9a] '>
         <input
             type="text"
             value={input}
             onChange={handleChange}
             placeholder="Enter something..."
-            className="border p-2 w-full rounded-md text-center"
+            className="r"
         />
-        <button type="button" className="btn btn-primary m-3" onClick={handleClick}>Primary</button>
+        <button type="button" className="" onClick={handleClick}>Enter</button>
         </div>
     
     </>
