@@ -21,7 +21,6 @@ const InputComponent = ({ setPoll }) => {
     } else if (input.includes("4")) {
       detectedValue = 4;
     }
-    console.log("Detected Value:", detectedValue); // Log before updating state
 
     setPoll((prevPolls) =>
       prevPolls.map((poll, i) =>

@@ -5,8 +5,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Ignore JSON files containing secrets
-*.json
-!package.json  # Keep package.json (for Node.js projects)
 googlettsapi.json
 # Logs
 logs/

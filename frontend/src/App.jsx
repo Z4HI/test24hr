@@ -24,6 +24,12 @@ function App() {
   const [audioUrl, setAudioUrl] = useState(null);
   const [timeleft, setTimeLeft] = useState(30);
   const [polls, setPoll] = useState([[0], [0], [0], [0]]);
+  const [chapter, SetChapter] = useState(0);
+  const [winningIndex, setWinningIndex] = useState(null);
+  const audioref = useRef(false);
+
+  axios.defaults.headers.common["Cache-Control"] = "no-cache";
+  axios.defaults.headers.common["Pragma"] = "no-cache";
 
   const handleTextChange = (e) => {
     setText(e.target.value);
@@ -59,20 +65,17 @@ function App() {
   //Timer is set to start with setTimeLeft(100)
   useEffect(() => {
     if (!audioUrl) return;
-
-    const newAudio = new Audio(audioUrl);
-    const handleAudioEnd = () => {
-      console.log("Audio finished. Sending request to delete file...");
-      deleteAudioUrl(audioUrl);
-      setLoading(false);
-      setTimeLeft(30);
-    };
-    newAudio
-      .play()
-      .then(() => console.log("Audio is playing..."))
-      .catch((err) => console.error("Audio play error:", err));
-
-    newAudio.onended = handleAudioEnd;
+    if (audioref.current === true) {
+      const newAudio = new Audio(audioUrl);
+      const handleAudioEnd = () => {
+        deleteAudioUrl(audioUrl);
+        setLoading(false);
+        setTimeLeft(4);
+      };
+      newAudio.play().catch((err) => console.error("Audio play error:", err));
+      newAudio.onended = handleAudioEnd;
+      audioref.current = false;
+    }
   }, [audioUrl]);
 
   //when the storyParts change, this useEffect is triggered to
@@ -81,9 +84,9 @@ function App() {
     if (fetchTriggeredRef.current === true) {
       fetchStory(storyParts.join(" "), userChoice);
       GenerateOptions(storyParts.join(" "));
-    }
-    if (storyParts.length > 10) {
-      storyParts.shift(); // Remove the first part if length exceeds 5
+      if (storyParts.length > 3) {
+        storyParts.shift(); // Remove the first part if length exceeds 5
+      }
     }
     generateTTS();
   }, [storyParts]);
@@ -94,12 +97,16 @@ function App() {
     try {
       const response = await axios
         .post("http://localhost:5000/GenerateNextChapter", {
-          prompt: { currentStory: storyParts, userchoice: userChoice }, // Pass current story + user choice
+          prompt: { CurrentStory: storyparts, UserChoice: userChoice },
+          headers: {
+            Connection: "close",
+          },
         })
         .then((response) => {
           setStory(response.data);
           setStoryParts([...storyParts, response.data]);
           setText(response.data);
+          SetChapter((prevChapter) => prevChapter + 1);
         });
     } catch (error) {
       console.error("Error fetching story:", error);
@@ -121,6 +128,7 @@ function App() {
       });
       const data = await response.json();
       setAudioUrl(data.AudioUrl);
+      audioref.current = true;
     } catch (error) {
       console.error("Error generating TTS:", error);
     }
@@ -141,25 +149,17 @@ function App() {
     }
   };
 
+  //Collect poll results
   const handlePollEnd = () => {
-    console.log("Submit poll, call api to generate next chapter");
-    const flattenedPolls = polls.flat();
-
-    let max = 0;
-    for (let i = 0; i < flattenedPolls.length; i++) {
-      if (flattenedPolls[i] > max) {
-        max = i;
-      }
-    }
-    console.log(options[max]);
-    setUserChoice(options[max]);
+    if (winningIndex == 3) SetChapter(0);
+    setUserChoice(options[winningIndex]);
     setStoryParts((prevStoryParts) => [...prevStoryParts]);
     setStory("");
     setOptions([]);
     setPoll([[0], [0], [0], [0]]);
     fetchTriggeredRef.current = true;
   };
-
+  //Timer Countdown
   useEffect(() => {
     if (timeleft === null) return;
     if (timeleft <= 0) {
@@ -172,17 +172,27 @@ function App() {
     return () => clearInterval(timer);
   }, [timeleft]);
 
+  useEffect(() => {
+    const maxVotes = Math.max(...polls.map((poll, index) => poll[0]));
+    const newWinningIndex = polls.findIndex((poll) => poll[0] === maxVotes);
+    setWinningIndex(newWinningIndex);
+  }, [polls]);
   return (
     <>
       <div className="h-full text-white overflow-y-hidden">
         <Navbar />
 
-        <Story_image story={story} imageURL={imageURL} />
+        <Story_image story={story} imageURL={imageURL} chapter={chapter} />
         {loading ? (
           <Loading />
         ) : options.length > 0 ? (
           <>
-            <Polling options={options} polls={polls} timeleft={timeleft} />
+            <Polling
+              options={options}
+              polls={polls}
+              timeleft={timeleft}
+              winningIndex={winningIndex}
+            />
             <InputComponent setPoll={setPoll} />
           </>
         ) : (

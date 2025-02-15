@@ -4,7 +4,11 @@ const Navbar = () => {
   return (
     <>
       <div className="text-white flex  items-center h-34 px-4 mx-auto justify-between">
-        <h3>Contact me: Byrie3k@gmail.com</h3>
+        <div>
+          <h3>For collaborations, promos and ads</h3>
+          <h3>Contact: ForeverStoryAI@gmail.com</h3>
+        </div>
+
         <h3 className="w-100">
           About: This is a fully autonomous 24/7 ai generated stream. You get to
           choose how the story goes based off of polls taken at the end of every
